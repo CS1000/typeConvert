@@ -4,7 +4,7 @@
 * Extra crispy layer, STRICT + Greedy/Loose flavors
 *
 * Original Author: CS`
-* Licence: MIT & Apache
+* Licence: MIT & FreeBSD
 *
 * Ref. : http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
 * Ref. : ISO/IEC 10967
