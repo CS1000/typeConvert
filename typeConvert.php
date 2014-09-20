@@ -3,7 +3,7 @@
 * Proper Type Conversion in PHP UserLand (Standard Aware)
 * Extra crispy layer, STRICT + Greedy/Loose flavors
 *
-* Original Author: CS`
+* Original Author: CS` 10101010
 * Licence: MIT & FreeBSD
 *
 * Ref. : http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
@@ -12,15 +12,33 @@
 
 class tc {
 
-    //STRICT not fully implemented yet !!!
-    const STRICT = true; //define loose/greedy conversion VS. Strict loseless or error
+//STRICT not fully implemented yet !!! 
+//toString/string_to mostly NOT implemented yet !!! 
+// ^--- TODO: remove me by implementing those everywhere
+
+    private $strict; //define loose/greedy conversion VS. Strict loseless or error
     
     //error hangling
     const EXCEPTIONS = 0;
-    const LOGS = 2;
-    
+    const LOGS = 2; //unused
 
-    // need max ints overhead?
+
+    
+    public function __construct($strict=false)
+    {
+        // need max ints overhead?
+
+        $this->strict=$strict;
+    }
+
+
+
+    //public function greedy($false=false) { return $this->strict=false; }
+    //public function loose($false=false) { return $this->strict=false; }
+    public function strict($strict=true) { 
+        $this->strict=$strict;
+    }
+
 
     private function conversionError($code) 
     {
@@ -43,7 +61,7 @@ class tc {
 
         if (preg_match('/^[0-9]{3}$/', $code)===1) {
             $error='Error Converting '.$errors[$code[0]].' to '.$errors[$code[1]].'. ';
-            if (self::STRICT) $error.='Strict mode. ';
+            if ($this->strict) $error.='Strict mode. ';
             else $error.='Greedy/Loose mode. ';
             switch ($code[2]) {
                 case 0:
@@ -92,11 +110,11 @@ class tc {
             'unknown type'=>'unknown' //not implemented, TODO
         ];
         
-        try { //gettype() failsafe
-            $type=$types[gettype($var)];
-        } catch (Exception $e) {
-            return $this->conversionError("Error Converting ".strtoupper(gettype($var)).". (".$e.")"); //need rewrite <-TODO
-        }
+        //try {
+        $type=$types[gettype($var)];
+        //} catch (Exception $e) {
+        //    return $this->conversionError("Error Converting ".strtoupper(gettype($var)).". (".$e.")"); //need rewrite <-TODO
+        //}
         
         if ($type===$to) return $var; //bypass conversion if it already is the destination type
         
@@ -113,22 +131,24 @@ class tc {
     * Int *whole numbers
     *******************************************************************/
     public function toInt($var) { return $this->unknown_to($var, 'int'); }
-    public function toInteger($var) { return $this->unknown_to($var, 'int'); }
+    //public function toInteger($var) { return $this->unknown_to($var, 'int'); }
 
 
-    public function boolean_toInt($var) { return $this->bool_toInt($var); }
+    //public function boolean_toInt($var) { return $this->bool_toInt($var); }
     public function bool_toInt($var) 
     { 
         $converted=(int)$var; //loseless conversion
         return $converted;
     }
 
+    /*
     public function double_toInt($var) { return $this->float_toInt($var); }
     public function real_toInt($var) { return $this->float_toInt($var); }
+    */
     public function float_toInt($var) 
     { 
         $converted=(int)$var;
-        if (self::STRICT) {
+        if ($this->strict) {
             // Integer does not have: [-0, INF, -INF, NAN]
             if ($converted==$var) {
                 return $converted;
@@ -162,12 +182,12 @@ class tc {
         }
     }
 
-    public function string_toInt($var) { return $this->str_toInt($var); }
+    //public function string_toInt($var) { return $this->str_toInt($var); }
     public function str_toInt($var) 
     { 
         $converted=(int)$var;
         
-        if (self::STRICT) {
+        if ($this->strict) {
             if ($converted==$var) {
                 return $converted;
             } else {
@@ -195,47 +215,58 @@ class tc {
     * Floating Point *real/double/float
     *******************************************************************/
     public function toFloat($var) { return $this->unknown_to($var, 'float'); }
-    public function toDouble($var) { return $this->unknown_to($var, 'float'); }
-    public function toReal($var) { return $this->unknown_to($var, 'float'); }
+    //public function toDouble($var) { return $this->unknown_to($var, 'float'); }
+    //public function toReal($var) { return $this->unknown_to($var, 'float'); }
 
 
-    public function integer_toDouble($var) { return $this->int_toFloat($var); }
+    /*public function integer_toDouble($var) { return $this->int_toFloat($var); }
     public function int_toDouble($var) { return $this->int_toFloat($var); }
     public function integer_toReal($var) { return $this->int_toFloat($var); }
     public function int_toReal($var) { return $this->int_toFloat($var); }
     public function integer_toFloat($var) { return $this->int_toFloat($var); }
+    */
     public function int_toFloat($var) 
     {
         // CAST
         return (float)$var; //loseless
     }
 
+    /*
     public function string_toDouble($var) { return $this->str_toFloat($var); }
     public function str_toDouble($var) { return $this->str_toFloat($var); }
     public function string_toReal($var) { return $this->str_toFloat($var); }
     public function str_toReal($var) { return $this->str_toFloat($var); }
     public function string_toFloat($var) { return $this->str_toFloat($var); }
+    */
     public function str_toFloat($var) 
     {
         $converted=(float)$var;
         if ($converted==$var) {
             //pretty good so far
-            return $converted;
+            //return $converted;
+
+            // TODO TODO TODO TODO ------ BROKEN
         } 
-        if (self::STRICT) return $this->conversionError(431);
+        if ($this->strict) return $this->conversionError(431);
         if (preg_match('/^(-)?INF$/i',$var, $m)===1) {
-            if ($m[1]) return -INF;
+            if (isset($m[1])) return -INF;
             return INF;
         }
+
+        /**
+        * TODO !!!
+        */
 
         return NAN;
     }
 
+    /*
     public function boolean_toDouble($var) { return $this->bool_toFloat($var); }
     public function bool_toDouble($var) { return $this->bool_toFloat($var); }
     public function boolean_toReal($var) { return $this->bool_toFloat($var); }
     public function bool_toReal($var) { return $this->bool_toFloat($var); }
     public function boolean_toFloat($var) { return $this->bool_toFloat($var); }
+    */
     public function bool_toFloat($var) 
     {
         return (float)$var; //loseless
@@ -253,10 +284,10 @@ class tc {
     * Bool *logical: true/false
     *******************************************************************/
     public function toBool($var) { return $this->unknown_to($var, 'bool'); }
-    public function toBoolean($var) { return $this->unknown_to($var, 'bool'); }
+    //public function toBoolean($var) { return $this->unknown_to($var, 'bool'); }
 
 
-    public function integer_toBool($var) { return $this->int_toBool($var); }
+    //public function integer_toBool($var) { return $this->int_toBool($var); }
     public function int_toBool($var) 
     {
         return $var>0;
@@ -264,17 +295,19 @@ class tc {
         //-1-- false
     }
 
+    /*
     public function real_toBool($var) { return $this->float_toBool($var); }
     public function double_toBool($var) { return $this->float_toBool($var); }
+    */
     public function float_toBool($var) 
     {
-           //false <0 &  //fix NaN
         return $var>0 or is_nan($var);
+        //return $var>0 ?: $var<0;
         // $var>0 sets NAN -> false
         // (bool) sets NAN -> false, -INF -> true
     }
 
-    public function string_toBool($var) { return $this->str_toBool($var); }
+    //public function string_toBool($var) { return $this->str_toBool($var); }
     public function str_toBool($var) {
         //string can include [bool+int+float]
         //should it return false for floats < 0 also??? <-- QUESTION / TODO: config
@@ -296,17 +329,19 @@ class tc {
     * Strings *char_array
     *******************************************************************/
     public function toStr($var) { return $this->unknown_to($var, 'str'); }
-    public function toString($var) { return $this->unknown_to($var, 'str'); }
+    //public function toString($var) { return $this->unknown_to($var, 'str'); }
 
 
-    public function integer_toStr($var) { return $this->int_toStr($var); }
+    //public function integer_toStr($var) { return $this->int_toStr($var); }
     public function int_toStr($var) 
     {
         return (string)$var; 
     }
 
+    /*
     public function real_toStr($var) { return $this->float_toStr($var); }
     public function double_toStr($var) { return $this->float_toStr($var); }
+    */
     public function float_toStr($var) 
     {
         //precise vs. any other choice (by 2 digits)
@@ -319,19 +354,23 @@ class tc {
         //FAIL for 2.8 !!!!!!!!!!!!!!!
     }
 
-    public function boolean_toStr($var) { return $this->bool_toStr($var); }
+    //public function boolean_toStr($var) { return $this->bool_toStr($var); }
     public function bool_toStr($var) 
     {
-        return $var?'true':'false';
-        //other
+        //loseless 
+        return $var?'true':'false'; 
+        //BUT which one complies best?
         //return $var?'1':'0';
         //return (string)($var+0);
+        //return (string)(int)$var;
     }
 
     public function null_toStr($var) 
     { 
-        //return "\0"; 
+        //loseless
         return ""; 
+        //BUT which one complies best?
+        //return "\0"; //string with NUL byte
     }
 
 
@@ -340,10 +379,10 @@ class tc {
     * NULL
     * null *nothing/nil/nada
     *******************************************************************/
-    public function toNIL($var) { return $this->toNULL($var); } //add more boilerplate
+    //public function toNIL($var) { return $this->toNULL($var); } //add more boilerplate
     public function toNULL($var) 
     { 
-        if (self::STRICT) {
+        if ($this->strict) {
             //refuse !
             return $this->conversionError(801);
         }
