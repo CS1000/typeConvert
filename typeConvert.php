@@ -3,11 +3,14 @@
 * Proper Type Conversion in PHP UserLand (Standard Aware)
 * Extra crispy layer, STRICT + Greedy/Loose flavors
 *
-* Original Author: CS` 10101010
+* Original Author: CS`
 * Licence: MIT & FreeBSD
 *
-* Ref. : http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
-* Ref. : ISO/IEC 10967
+* Ref.: http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+* Standards: 
+  *  ISO/IEC 10967
+  *  ISO/IEC 11404:2007
+  *  ISO/IEC 60559:2011 (IEEE 754:2008) (*partial)
 ***********************************************************************/
 
 class tc {
@@ -30,15 +33,18 @@ class tc {
 
         $this->strict=$strict;
     }
-
-
-
-    //public function greedy($false=false) { return $this->strict=false; }
-    //public function loose($false=false) { return $this->strict=false; }
     public function strict($strict=true) { 
         $this->strict=$strict;
     }
 
+    
+    /*oooooooooo
+    `888'     `8
+     888         oooo d8b oooo d8b  .ooooo.  oooo d8b  .oooo.o
+     888oooo8    `888""8P `888""8P d88' `88b `888""8P d88(  "8
+     888    "     888      888     888   888  888     `"Y88b.
+     888       o  888      888     888   888  888     o.  )88b
+    o888ooooood8 d888b    d888b    `Y8bod8P' d888b    8""888*/
 
     private function conversionError($code) 
     {
@@ -86,6 +92,14 @@ class tc {
         return null; // <--- !!! NULL 
     }
 
+    /*ooooooo.                             .
+    `888   `Y88.                         .o8
+     888   .d88'  .ooooo.  oooo  oooo  .o888oo  .ooooo.  oooo d8b
+     888ooo88P'  d88' `88b `888  `888    888   d88' `88b `888""8P
+     888`88b.    888   888  888   888    888   888ooo888  888
+     888  `88b.  888   888  888   888    888 . 888    .o  888
+    o888o  o888o `Y8bod8P'  `V88V"V8P'   "888" `Y8bod8P' d88*/
+
     private function unknown_to($var, $to) 
     {
         $types=[
@@ -125,11 +139,18 @@ class tc {
     }
 
 
+    /*ooo                 .
+    `888'               .o8
+     888  ooo. .oo.   .o888oo  .ooooo.   .oooooooo  .ooooo.  oooo d8b
+     888  `888P"Y88b    888   d88' `88b 888' `88b  d88' `88b `888""8P
+     888   888   888    888   888ooo888 888   888  888ooo888  888
+     888   888   888    888 . 888    .o `88bod8P'  888    .o  888
+    o888o o888o o888o   "888" `Y8bod8P' `8oooooo.  `Y8bod8P' d888b
+                                        d"     YD
+                                        "Y88888*/
+    
+    //Integers (int/integer)
 
-    /*******************************************************************
-    * INTEGERS
-    * Int *whole numbers
-    *******************************************************************/
     public function toInt($var) { return $this->unknown_to($var, 'int'); }
     //public function toInteger($var) { return $this->unknown_to($var, 'int'); }
 
@@ -210,10 +231,16 @@ class tc {
 
 
 
-    /*******************************************************************
-    * FLOATS
-    * Floating Point *real/double/float
-    *******************************************************************/
+    /*oooooooooo oooo                          .
+    `888'     `8 `888                        .o8
+     888          888   .ooooo.   .oooo.   .o888oo  .oooo.o
+     888oooo8     888  d88' `88b `P  )88b    888   d88(  "8
+     888    "     888  888   888  .oP"888    888   `"Y88b.
+     888          888  888   888 d8(  888    888 . o.  )88b
+    o888o        o888o `Y8bod8P' `Y888""8o   "888" 8""888*/
+
+    //Floating Point Numbers (real/double/float)
+
     public function toFloat($var) { return $this->unknown_to($var, 'float'); }
     //public function toDouble($var) { return $this->unknown_to($var, 'float'); }
     //public function toReal($var) { return $this->unknown_to($var, 'float'); }
@@ -279,10 +306,16 @@ class tc {
 
 
 
-    /*******************************************************************
-    * BOOLEANS
-    * Bool *logical: true/false
-    *******************************************************************/
+    /*oooooooo.                      oooo
+    `888'   `Y8b                     `888
+     888     888  .ooooo.   .ooooo.   888   .ooooo.   .oooo.   ooo. .oo.
+     888oooo888' d88' `88b d88' `88b  888  d88' `88b `P  )88b  `888P"Y88b
+     888    `88b 888   888 888   888  888  888ooo888  .oP"888   888   888
+     888    .88P 888   888 888   888  888  888    .o d8(  888   888   888
+    o888bood8P'  `Y8bod8P' `Y8bod8P' o888o `Y8bod8P' `Y888""8o o888o o88*/
+
+    //Boolean (bool/boolean)
+
     public function toBool($var) { return $this->unknown_to($var, 'bool'); }
     //public function toBoolean($var) { return $this->unknown_to($var, 'bool'); }
 
@@ -324,10 +357,18 @@ class tc {
 
 
 
-    /*******************************************************************
-    * STRINGS
-    * Strings *char_array
-    *******************************************************************/
+    
+     /*ooooo..o     .             o8o
+    d8P'    `Y8   .o8             `"'
+    Y88bo.      .o888oo oooo d8b oooo  ooo. .oo.    .oooooooo
+     `"Y8888o.    888   `888""8P `888  `888P"Y88b  888' `88b
+         `"Y88b   888    888      888   888   888  888   888
+    oo     .d8P   888 .  888      888   888   888  `88bod8P'
+    8""88888P'    "888" d888b    o888o o888o o888o `8oooooo.
+                                                   d"     YD
+                                                   "Y88888*/
+    //Strings (string)
+
     public function toStr($var) { return $this->unknown_to($var, 'str'); }
     //public function toString($var) { return $this->unknown_to($var, 'str'); }
 
@@ -374,19 +415,21 @@ class tc {
     }
 
 
-    
-    /*******************************************************************
-    * NULL
-    * null *nothing/nil/nada
-    *******************************************************************/
+    /*ooo      ooo ooooo     ooo ooooo        ooooo
+    `888b.     `8' `888'     `8' `888'        `888'
+     8 `88b.    8   888       8   888          888
+     8   `88b.  8   888       8   888          888
+     8     `88b.8   888       8   888          888
+     8       `888   `88.    .8'   888       o  888       o
+    o8o        `8     `YbodP'    o888ooooood8 o888oooooo*/
+
     //public function toNIL($var) { return $this->toNULL($var); } //add more boilerplate
     public function toNULL($var) 
     { 
-        if ($this->strict) {
-            //refuse !
-            return $this->conversionError(801);
-        }
-        return NULL;
+        //can't actually convert anything into NULL if it is not effectively NULL
+        if ($this->strict) return $this->conversionError(801);
+        
+        return NULL; //complete loss of data.
     }
 
     /******************************************************************/
