@@ -38,7 +38,7 @@ class tc {
     }
 
     
-    /*oooooooooo
+    /**ooooooooo
     `888'     `8
      888         oooo d8b oooo d8b  .ooooo.  oooo d8b  .oooo.o
      888oooo8    `888""8P `888""8P d88' `88b `888""8P d88(  "8
@@ -92,7 +92,7 @@ class tc {
         return null; // <--- !!! NULL 
     }
 
-    /*ooooooo.                             .
+    /**oooooo.                             .
     `888   `Y88.                         .o8
      888   .d88'  .ooooo.  oooo  oooo  .o888oo  .ooooo.  oooo d8b
      888ooo88P'  d88' `88b `888  `888    888   d88' `88b `888""8P
@@ -139,7 +139,7 @@ class tc {
     }
 
 
-    /*ooo                 .
+    /**oo                 .
     `888'               .o8
      888  ooo. .oo.   .o888oo  .ooooo.   .oooooooo  .ooooo.  oooo d8b
      888  `888P"Y88b    888   d88' `88b 888' `88b  d88' `88b `888""8P
@@ -231,7 +231,7 @@ class tc {
 
 
 
-    /*oooooooooo oooo                          .
+    /**ooooooooo oooo                          .
     `888'     `8 `888                        .o8
      888          888   .ooooo.   .oooo.   .o888oo  .oooo.o
      888oooo8     888  d88' `88b `P  )88b    888   d88(  "8
@@ -306,7 +306,7 @@ class tc {
 
 
 
-    /*oooooooo.                      oooo
+    /**ooooooo.                      oooo
     `888'   `Y8b                     `888
      888     888  .ooooo.   .ooooo.   888   .ooooo.   .oooo.   ooo. .oo.
      888oooo888' d88' `88b d88' `88b  888  d88' `88b `P  )88b  `888P"Y88b
@@ -358,7 +358,7 @@ class tc {
 
 
     
-     /*ooooo..o     .             o8o
+     /**oooo..o     .             o8o
     d8P'    `Y8   .o8             `"'
     Y88bo.      .o888oo oooo d8b oooo  ooo. .oo.    .oooooooo
      `"Y8888o.    888   `888""8P `888  `888P"Y88b  888' `88b
@@ -415,7 +415,7 @@ class tc {
     }
 
 
-    /*ooo      ooo ooooo     ooo ooooo        ooooo
+    /**oo      ooo ooooo     ooo ooooo        ooooo
     `888b.     `8' `888'     `8' `888'        `888'
      8 `88b.    8   888       8   888          888
      8   `88b.  8   888       8   888          888
