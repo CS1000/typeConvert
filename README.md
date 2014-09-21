@@ -18,7 +18,7 @@ List of standards proposed for addoption (please suggest more):
 
  - ISO/IEC 10967
  - ISO/IEC 11404:2007 
- - ISO/IEC 60559:2011 (IEEE 754:2008)
+ - ISO/IEC 60559:2011 (~~IEEE 754~~)
 
 Ref.  
 
