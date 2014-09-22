@@ -49,7 +49,7 @@ class tc {
     private function conversionError($code) 
     {
         //nine (9) types reported by gettype()
-        //eg. 832 => 'Error Converting NULL to Float. {STRICT} mode. No Method Available. '
+        //eg. 832 => 'Error Converting NULL to Float. {$this->strict} mode. No Method Available. '
         $errors=[
               0=>'$variable',
               1=>"Boolean",
@@ -130,7 +130,7 @@ class tc {
         //    return $this->conversionError("Error Converting ".strtoupper(gettype($var)).". (".$e.")"); //need rewrite <-TODO
         //}
         
-        if ($type===$to) return $var; //bypass conversion if it already is the destination type
+        if ($type===$to) return $var; //bypass conversion if it already is the destination type NEEDED
         
         $route=$type.'_to'.$to;
         if (method_exists($this, $route)) return $this->$route($var);
