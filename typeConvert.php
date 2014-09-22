@@ -100,7 +100,7 @@ class tc {
      888  `88b.  888   888  888   888    888 . 888    .o  888
     o888o  o888o `Y8bod8P'  `V88V"V8P'   "888" `Y8bod8P' d88*/
 
-    private function unknown_to($var, $to) 
+    private function typeRouter($var, $to) 
     {
         $types=[
             //scalar
@@ -151,8 +151,8 @@ class tc {
     
     //Integers (int/integer)
 
-    public function toInt($var) { return $this->unknown_to($var, 'int'); }
-    //public function toInteger($var) { return $this->unknown_to($var, 'int'); }
+    public function toInt($var) { return $this->typeRouter($var, 'int'); }
+    //public function toInteger($var) { return $this->typeRouter($var, 'int'); }
 
 
     //public function boolean_toInt($var) { return $this->bool_toInt($var); }
@@ -241,9 +241,9 @@ class tc {
 
     //Floating Point Numbers (real/double/float)
 
-    public function toFloat($var) { return $this->unknown_to($var, 'float'); }
-    //public function toDouble($var) { return $this->unknown_to($var, 'float'); }
-    //public function toReal($var) { return $this->unknown_to($var, 'float'); }
+    public function toFloat($var) { return $this->typeRouter($var, 'float'); }
+    //public function toDouble($var) { return $this->typeRouter($var, 'float'); }
+    //public function toReal($var) { return $this->typeRouter($var, 'float'); }
 
 
     /*public function integer_toDouble($var) { return $this->int_toFloat($var); }
@@ -316,8 +316,8 @@ class tc {
 
     //Boolean (bool/boolean)
 
-    public function toBool($var) { return $this->unknown_to($var, 'bool'); }
-    //public function toBoolean($var) { return $this->unknown_to($var, 'bool'); }
+    public function toBool($var) { return $this->typeRouter($var, 'bool'); }
+    //public function toBoolean($var) { return $this->typeRouter($var, 'bool'); }
 
 
     //public function integer_toBool($var) { return $this->int_toBool($var); }
@@ -369,14 +369,14 @@ class tc {
                                                    "Y88888*/
     //Strings (string)
 
-    public function toStr($var) { return $this->unknown_to($var, 'str'); }
-    //public function toString($var) { return $this->unknown_to($var, 'str'); }
+    public function toStr($var) { return $this->typeRouter($var, 'str'); }
+    //public function toString($var) { return $this->typeRouter($var, 'str'); }
 
 
     //public function integer_toStr($var) { return $this->int_toStr($var); }
     public function int_toStr($var) 
     {
-        return (string)$var; 
+        return (string)$var; //loseless
     }
 
     /*
@@ -390,7 +390,7 @@ class tc {
         //Converted:  (string(27) "1123456789.0123457908630371" 
         //Cast:       (string(15) "1123456789.0123" ^inexact from here
         return sprintf("%.16F",$var); //not nice for 1e300 (ends in: .0000000000000000)
-        // const M_PI FAIL (last digit)!!! 
+        // const M_PI FAIL ? (last digit)!!! 
         //FAIL for -INF !!!!!!!!!!!!!!!
         //FAIL for 2.8 !!!!!!!!!!!!!!!
     }
@@ -401,17 +401,37 @@ class tc {
         //loseless 
         return $var?'true':'false'; 
         //BUT which one complies best?
-        //return $var?'1':'0';
-        //return (string)($var+0);
-        //return (string)(int)$var;
+        return $var?'1':'0';
+        return (string)($var+0);
+        return (string)(int)$var;
     }
 
     public function null_toStr($var) 
     { 
-        //loseless
+        //loseless ??? even 4 STRICT?
         return ""; 
         //BUT which one complies best?
-        //return "\0"; //string with NUL byte
+        return "\0"; //string with NUL byte
+    }
+
+    public function array_toStr($var) 
+    { 
+        //loseless / effective conversion instead of E_NOTICE+'Array' result
+        // bugs? 
+        return var_export($var, true);
+        //BUT which one's bettr?
+        return json_encode($var); //OPTIONS?
+        return serialize($var);
+    }
+
+    //public function object_toStr($var) { return $this->obj_toStr($var); }
+    public function obj_toStr($var) 
+    { 
+        //loseless / effective conversion instead of E_NOTICE+'Array' result
+        // bugs? 
+        return var_export($var, true);
+        //BUT which one's bettr?
+        return serialize($var);
     }
 
 
