@@ -5,7 +5,7 @@ Extra crispy layer, STRICT + Greedy flavors
 
 EXPERIMENTAL and UNDER DEVELOPMENT
 
-Version: 0.1.0
+Version: 0.1.0dev
 
 An attempt to fix type inconsistencies in PHP by adding a set of methods to knowingly or automagically convert datatypes in a desired, predictable, standardised mode.
 
