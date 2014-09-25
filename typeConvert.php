@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************
 * Proper Type Conversion in PHP UserLand (Standard Aware)
-* Extra crispy layer, STRICT + Greedy/Loose flavors
+* Extra crispy layer, multiple flavors (STRICT + Greedy + etc.)
 *
 * Original Author: CS`
 * Licence: MIT & FreeBSD
@@ -40,11 +40,11 @@ class tc {
     
     /**ooooooooo
     `888'     `8
-     888         oooo d8b oooo d8b  .ooooo.  oooo d8b  .oooo.o
+     888         oooo d8b oooo d8b  .ooooo.  oooo d8b  .oooo\
      888oooo8    `888""8P `888""8P d88' `88b `888""8P d88(  "8
      888    "     888      888     888   888  888     `"Y88b.
      888       o  888      888     888   888  888     o.  )88b
-    o888ooooood8 d888b    d888b    `Y8bod8P' d888b    8""888*/
+    o888ooooood8 d888b    d888b    `Y8bod8P' d888b     \"888*/
 
     private function conversionError($code) 
     {
@@ -102,38 +102,45 @@ class tc {
 
     private function typeRouter($var, $to) 
     {
-        $types=[
-            //scalar
-            'boolean'=>'bool', 
-            'integer'=>'int', 
-            'double' =>'float', 
-            'string' =>'str', 
-            
-            //compound
-            'array'=>'array', //not implemented, TODO
-            'object'=>'obj', //not implemented, TODO
-            //SPL types ?
-
-            //special
-            'resource'=>'resource', //not implemented, TODO
-            'NULL'   =>'null',
-            
-            //pseudo-type (for readability)
-            // mixed, number/numeric, callback
-            // +                     ^
-            'unknown type'=>'unknown' //not implemented, TODO
-        ];
-        
         //try {
-        $type=$types[gettype($var)];
+        switch (gettype($var)) {
+            //scalar types
+            case 'boolean': $type='bool';break;
+            case 'integer': $type='int';break;
+            case 'double': $type='float';break;
+            case 'string': $type='str';break;
+            
+            //compound types,  //mostly not implemented, TODO 
+            case 'array': $type='array';break;
+            case 'object': $type='obj';break;
+            
+            //TODO: add SPL types ?
+
+            //special types
+            case 'resource': $type='resource';break; //not implemented, TODO 
+            case 'NULL': $type='null';break;
+            
+            //not implemented, TODO: when does this happen?
+            case 'unknown type': $type='unknown';break;
+            default: //unknown/unexpected/future behaviour
+                return $this->conversionError("Error Converting. Unrecognised input. ");
+                break;
+        }
         //} catch (Exception $e) {
         //    return $this->conversionError("Error Converting ".strtoupper(gettype($var)).". (".$e.")"); //need rewrite <-TODO
         //}
         
+        // $type=='unknown' ?
+        //pseudo-types for readability: mixed/number/numeric/callback/callable
+        
+        
+        //make sure $to uses the same notation, else error
         if ($type===$to) return $var; //bypass conversion if it already is the destination type NEEDED
         
         $route=$type.'_to'.$to;
-        if (method_exists($this, $route)) return $this->$route($var);
+        if (method_exists($this, $route)) { //FCALL, bettr wrap in a try, or TODO: function __call
+            return $this->$route($var);
+        }
         
         return $this->conversionError("Error Converting ".strtoupper($type)." to ".strtoupper($to).". Nothing to do."); //need rewrite <-TODO
     }
@@ -147,9 +154,7 @@ class tc {
      888   888   888    888 . 888    .o `88bod8P'  888    .o  888
     o888o o888o o888o   "888" `Y8bod8P' `8oooooo.  `Y8bod8P' d888b
                                         d"     YD
-                                        "Y88888*/
-    
-    //Integers (int/integer)
+    //Integers (int/integer)            "Y88888*/
 
     public function toInt($var) { return $this->typeRouter($var, 'int'); }
     //public function toInteger($var) { return $this->typeRouter($var, 'int'); }
@@ -158,8 +163,7 @@ class tc {
     //public function boolean_toInt($var) { return $this->bool_toInt($var); }
     public function bool_toInt($var) 
     { 
-        $converted=(int)$var; //loseless conversion
-        return $converted;
+        return (int)$var; //loseless conversion
     }
 
     /*
@@ -170,7 +174,7 @@ class tc {
     { 
         $converted=(int)$var;
         if ($this->strict) {
-            // Integer does not have: [-0, INF, -INF, NAN]
+            // Integer does not have: [-0, INF, -INF, NAN] and maxint<maxfloat
             if ($converted==$var) {
                 return $converted;
             } else {
@@ -180,25 +184,23 @@ class tc {
 
         $realValue=var_export($var, true); //actual usable value
         
-        //can't use a switch here, comp is loose!
-        if ($realValue==='INF') {
+        //switch?
+        if ($realValue==='INF') { //fix overflow to max int bounds
             //fix: -PHP_INT_MAX return
             return PHP_INT_MAX;
-        }    
-        /*elseif ($realValue==='-INF) {
-            //fix Future: https://wiki.php.net/rfc/integer_semantics
+        } elseif ($realValue==='-INF') {
+            //fix in PHP7 (ref. https://wiki.php.net/rfc/integer_semantics) (0 return)
             return -PHP_INT_MAX; 
-        }*/
-        elseif ($realValue==='NAN') {
-            return 0;
-        }
-        else {
+        } elseif ($realValue==='NAN') { //flush to zero
+            return 0; //undefined numeric value
+        } else {
             //fix: ints are automagically converted to floats after INT_MAX
             if ($var>=PHP_INT_MAX) { 
                 return PHP_INT_MAX;
             } elseif ($var<=-PHP_INT_MAX) { 
                 return -PHP_INT_MAX;
             }
+            //need something bettr than FCALL+cast TODO
             return (int)round($var); //return a ROUNDED int, VS. a Floored one 
         }
     }
@@ -254,7 +256,6 @@ class tc {
     */
     public function int_toFloat($var) 
     {
-        // CAST
         return (float)$var; //loseless
     }
 
@@ -301,7 +302,7 @@ class tc {
     
     public function null_toFloat($var) 
     { 
-        return 0e0; 
+        return NAN; 
     }
 
 
@@ -366,8 +367,7 @@ class tc {
     oo     .d8P   888 .  888      888   888   888  `88bod8P'
     8""88888P'    "888" d888b    o888o o888o o888o `8oooooo.
                                                    d"     YD
-                                                   "Y88888*/
-    //Strings (string)
+    //Strings (string)                             "Y88888*/
 
     public function toStr($var) { return $this->typeRouter($var, 'str'); }
     //public function toString($var) { return $this->typeRouter($var, 'str'); }
@@ -443,7 +443,8 @@ class tc {
      8       `888   `88.    .8'   888       o  888       o
     o8o        `8     `YbodP'    o888ooooood8 o888oooooo*/
 
-    //public function toNIL($var) { return $this->toNULL($var); } //add more boilerplate
+    //this makes absolutelly no sense to use, only helpful in automated usage for consistency
+
     public function toNULL($var) 
     { 
         //can't actually convert anything into NULL if it is not effectively NULL
